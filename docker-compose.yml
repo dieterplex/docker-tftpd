@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   tftpd:
     image: docker.io/kalaksi/tftpd
@@ -20,7 +20,17 @@ services:
       - 69:1069/udp
     volumes:
       - tftpd_boot:/tftpboot/boot
-      - tftpd_configuration:/tftpboot/pxelinux.cfg:ro
+      - ./pxelinux.cfg:/tftpboot/pxelinux.cfg:ro
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - tftpd_boot:/srv
+      - ./filebrowser.json:/config/settings.json
+    environment:
+      - FB_NOAUTH=true
+    restart: unless-stopped
   # http-bootfiles:
   #   image: nginx:stable
   #   restart: unless-stopped
@@ -39,5 +49,4 @@ services:
 
 volumes:
   tftpd_boot: {}
-  tftpd_configuration: {}
 
